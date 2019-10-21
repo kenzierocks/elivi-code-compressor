@@ -3,6 +3,7 @@ import net.minecrell.gradle.licenser.LicenseExtension
 plugins {
     application
     id("com.techshroom.incise-blue") version "0.4.0"
+    id("net.researchgate.release") version "2.8.0"
     kotlin("jvm") version "1.3.50"
 }
 
@@ -12,10 +13,20 @@ inciseBlue {
     util {
         javaVersion = JavaVersion.VERSION_1_8
     }
+    maven {
+        projectDescription = "Code Compressor for Java"
+        coords("kenzierocks", "elivi-code-compressor")
+    }
 }
 
 configure<LicenseExtension> {
     include("**/*.kt")
+}
+
+plugins.withId("maven-publish") {
+    tasks.named("afterReleaseBuild").configure {
+        dependsOn(tasks.named("publish"))
+    }
 }
 
 dependencies {
