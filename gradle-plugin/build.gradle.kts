@@ -52,8 +52,8 @@ gradlePlugin {
 
 tasks.named("publishPlugins").configure {
     // The nexus tasks are trickier -- don't publish to Gradle until they are known-good
-    mustRunAfter(":cli:publish")
-    mustRunAfter(":common:publish")
+    mustRunAfter(":elivi-cli:publish")
+    mustRunAfter(":elivi-common:publish")
 }
 rootProject.tasks.named("afterReleaseBuild").configure {
     dependsOn(tasks.named("publishPlugins"))
