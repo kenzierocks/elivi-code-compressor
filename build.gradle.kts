@@ -1,6 +1,6 @@
 plugins {
     base
-    id("com.techshroom.incise-blue") version "0.4.0"
+    id("com.techshroom.incise-blue") version "0.5.1"
     id("net.researchgate.release") version "2.8.0"
     kotlin("jvm") version "1.3.50" apply false
 }

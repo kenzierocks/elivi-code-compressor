@@ -1,3 +1,4 @@
+import com.techshroom.inciseblue.maven.License
 import net.minecrell.gradle.licenser.LicenseExtension
 
 plugins {
@@ -12,9 +13,11 @@ inciseBlue {
     util {
         javaVersion = JavaVersion.VERSION_1_8
     }
-    maven {
-        projectDescription = "Code Compressor for Java (CLI Tool)"
+    nexus {
+        projectDescription.set("Code Compressor for Java (CLI Tool)")
         coords("octylFractal", "elivi-code-compressor")
+        license(License.MIT)
+        addDeveloper("octylFractal", "Octavia Togami", "octavia.togami@gmail.com")
     }
 }
 
