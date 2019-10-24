@@ -1,5 +1,5 @@
 /*
- * This file is part of elivi-code-compressor, licensed under the MIT License (MIT).
+ * This file is part of elivi, licensed under the MIT License (MIT).
  *
  * Copyright (c) Octavia Togami <https://octyl.net>
  * Copyright (c) contributors
@@ -27,12 +27,14 @@ package net.octyl.elivi
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.split
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.path
 import net.octyl.elivi.asm.AsmCodeCompressor
+import java.nio.file.Files
 import java.util.EnumSet
 
 class EliviCodeCompressor : CliktCommand(
@@ -42,13 +44,14 @@ class EliviCodeCompressor : CliktCommand(
 
     private val flags by option(help = "Flags for the compressor")
         .enum<CompressOption>().split(",").multiple()
-    private val source by argument(help = "Class file to process.")
-        .path(exists = true)
-    private val dest by argument(help = "Destination for compressed file.")
-        .path(folderOkay = false)
+    private val source by argument(help = "Class file(s) to process.")
+        .path(exists = true).multiple()
+    private val dest by argument(help = "Destination directory for compressed file.")
+        .path(fileOkay = false)
     private val compressor = AsmCodeCompressor()
 
     override fun run() {
+        Files.createDirectories(dest)
         val flagList = flags.flatten()
         val flagSet: Set<CompressOption> = when {
             flagList.isEmpty() -> setOf()

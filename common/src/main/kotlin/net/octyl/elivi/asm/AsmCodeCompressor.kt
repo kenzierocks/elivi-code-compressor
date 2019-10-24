@@ -1,5 +1,5 @@
 /*
- * This file is part of elivi-code-compressor, licensed under the MIT License (MIT).
+ * This file is part of elivi, licensed under the MIT License (MIT).
  *
  * Copyright (c) Octavia Togami <https://octyl.net>
  * Copyright (c) contributors
@@ -25,26 +25,41 @@
 
 package net.octyl.elivi.asm
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import net.octyl.elivi.CodeCompressor
 import net.octyl.elivi.CompressOption
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.commons.ClassRemapper
 import org.objectweb.asm.commons.SimpleRemapper
-import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
 
 class AsmCodeCompressor : CodeCompressor {
-    override fun compress(source: Path, dest: Path, flags: Set<CompressOption>) {
-        val classData = Files.newInputStream(source).use { input ->
-            doCompress(input, flags)
+    override fun compress(source: List<Path>, dest: Path, flags: Set<CompressOption>) {
+        runBlocking(Dispatchers.Default) {
+            source.map { src ->
+                launch {
+                    val reader = withContext(Dispatchers.IO) {
+                        Files.newInputStream(src).use { ClassReader(it) }
+                    }
+                    val classData = doCompress(reader, flags)
+                    val className = ClassReader(classData).className
+                    val destFile = dest.resolve("$className.class")
+                    withContext(Dispatchers.IO) {
+                        Files.createDirectories(destFile.parent)
+                        Files.write(destFile, classData)
+                    }
+                }
+            }.joinAll()
         }
-        Files.write(dest, classData)
     }
 
-    private fun doCompress(input: InputStream, flags: Set<CompressOption>): ByteArray {
-        val reader = ClassReader(input)
+    private fun doCompress(reader: ClassReader, flags: Set<CompressOption>): ByteArray {
         val writer = ClassWriter(0)
         val remapper = RemapBuilder(flags)
         // Configure re-mapper

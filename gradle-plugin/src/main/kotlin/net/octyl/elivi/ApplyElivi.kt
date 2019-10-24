@@ -1,5 +1,5 @@
 /*
- * This file is part of elivi-code-compressor, licensed under the MIT License (MIT).
+ * This file is part of elivi, licensed under the MIT License (MIT).
  *
  * Copyright (c) Octavia Togami <https://octyl.net>
  * Copyright (c) contributors
@@ -23,27 +23,30 @@
  * THE SOFTWARE.
  */
 
-package net.octyl.elivi.asm
+package net.octyl.elivi
 
-import net.octyl.elivi.CompressOption
-import net.octyl.elivi.CompressOption.REMOVE_SOURCEFILE
-import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.MethodVisitor
-import org.objectweb.asm.Opcodes
+import net.octyl.elivi.asm.AsmCodeCompressor
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
+import org.gradle.workers.WorkAction
+import org.gradle.workers.WorkParameters
+import java.nio.file.Path
 
-class CompressingClassVisitor(
-    private val flags: Set<CompressOption>,
-    delegate: ClassVisitor? = null
-) : ClassVisitor(Opcodes.ASM7, delegate) {
-
-    override fun visitMethod(access: Int, name: String?, descriptor: String?, signature: String?, exceptions: Array<out String>?): MethodVisitor {
-        val visitor = super.visitMethod(access, name, descriptor, signature, exceptions)
-        return CompressingMethodVisitor(flags, visitor)
+abstract class ApplyElivi : WorkAction<ApplyEliviWorkParameters> {
+    override fun execute() {
+        val compressor = AsmCodeCompressor()
+        compressor.compress(
+            parameters.inputFiles.get(),
+            parameters.outputDir.get().asFile.toPath(),
+            parameters.spec.get().flags.get()
+        )
     }
+}
 
-    override fun visitSource(source: String?, debug: String?) {
-        if (REMOVE_SOURCEFILE !in flags) {
-            super.visitSource(source, debug)
-        }
-    }
+interface ApplyEliviWorkParameters : WorkParameters {
+    val inputFiles: ListProperty<Path>
+    val outputDir: DirectoryProperty
+    val spec: Property<EliviProcessingSpec>
 }

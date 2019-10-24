@@ -1,5 +1,5 @@
 /*
- * This file is part of elivi-code-compressor, licensed under the MIT License (MIT).
+ * This file is part of elivi, licensed under the MIT License (MIT).
  *
  * Copyright (c) Octavia Togami <https://octyl.net>
  * Copyright (c) contributors
@@ -25,29 +25,14 @@
 
 package net.octyl.elivi
 
-private val DEFAULT_ALPHABET = (('a'..'z') + ('A'..'Z')).joinToString(separator = "")
+import org.gradle.api.model.ObjectFactory
+import org.gradle.kotlin.dsl.setProperty
 
 /**
- * Provides incremental name generation.
+ * Specification for how to apply Elivi to a file.
  */
-class NameCounter(
-    private val alphabet: String = DEFAULT_ALPHABET
-) {
-    private var index = 0
+class EliviProcessingSpec(objectFactory: ObjectFactory) {
 
-    private fun getCurrentName(): String {
-        val radix = alphabet.length
-        return buildString {
-            var i = index
-            while (i >= radix) {
-                insert(0, alphabet[i % radix])
-                i /= radix
-            }
-            insert(0, alphabet[i])
-        }
-    }
+    val flags = objectFactory.setProperty<CompressOption>()
 
-    fun getAndIncrement() = getCurrentName().also {
-        index++
-    }
 }

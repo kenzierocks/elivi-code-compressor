@@ -1,5 +1,5 @@
 /*
- * This file is part of elivi-code-compressor, licensed under the MIT License (MIT).
+ * This file is part of elivi, licensed under the MIT License (MIT).
  *
  * Copyright (c) Octavia Togami <https://octyl.net>
  * Copyright (c) contributors

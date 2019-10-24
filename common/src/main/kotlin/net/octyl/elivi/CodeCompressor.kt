@@ -1,5 +1,5 @@
 /*
- * This file is part of elivi-code-compressor, licensed under the MIT License (MIT).
+ * This file is part of elivi, licensed under the MIT License (MIT).
  *
  * Copyright (c) Octavia Togami <https://octyl.net>
  * Copyright (c) contributors
@@ -29,6 +29,9 @@ import java.nio.file.Path
 
 interface CodeCompressor {
 
-    fun compress(source: Path, dest: Path, flags: Set<CompressOption>)
+    /**
+     * Compress file(s) [source], putting them into [dest] under the corresponding package folder.
+     */
+    fun compress(source: List<Path>, dest: Path, flags: Set<CompressOption>)
 
 }

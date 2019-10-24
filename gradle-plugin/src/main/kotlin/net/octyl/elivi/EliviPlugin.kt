@@ -1,5 +1,5 @@
 /*
- * This file is part of elivi-code-compressor, licensed under the MIT License (MIT).
+ * This file is part of elivi, licensed under the MIT License (MIT).
  *
  * Copyright (c) Octavia Togami <https://octyl.net>
  * Copyright (c) contributors
@@ -23,28 +23,12 @@
  * THE SOFTWARE.
  */
 
-package net.octyl.elivi.asm
+package net.octyl.elivi
 
-import net.octyl.elivi.CompressOption
-import net.octyl.elivi.CompressOption.REMOVE_LNT
-import net.octyl.elivi.CompressOption.REMOVE_LVT
-import org.objectweb.asm.Label
-import org.objectweb.asm.MethodVisitor
-import org.objectweb.asm.Opcodes
+import org.gradle.api.Plugin
+import org.gradle.api.Project
 
-class CompressingMethodVisitor(
-    private val flags: Set<CompressOption>,
-    delegate: MethodVisitor? = null
-) : MethodVisitor(Opcodes.ASM7, delegate) {
-    override fun visitLocalVariable(name: String, descriptor: String?, signature: String?, start: Label?, end: Label?, index: Int) {
-        if (REMOVE_LVT !in flags) {
-            return super.visitLocalVariable(name, descriptor, signature, start, end, index)
-        }
-    }
-
-    override fun visitLineNumber(line: Int, start: Label?) {
-        if (REMOVE_LNT !in flags) {
-            return super.visitLineNumber(line, start)
-        }
+open class EliviPlugin : Plugin<Project> {
+    override fun apply(target: Project) {
     }
 }
