@@ -14,7 +14,6 @@ inciseBlue {
     maven {
         projectDescription = "Code Compressor for Java (Common Code)"
         coords("octylFractal", "elivi-code-compressor")
-        artifactName = "${rootProject.name}-${project.name}"
     }
 }
 
