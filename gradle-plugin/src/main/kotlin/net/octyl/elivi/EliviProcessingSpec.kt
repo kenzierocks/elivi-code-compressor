@@ -25,14 +25,13 @@
 
 package net.octyl.elivi
 
-import org.gradle.api.model.ObjectFactory
-import org.gradle.kotlin.dsl.setProperty
+import org.gradle.api.provider.SetProperty
 
 /**
  * Specification for how to apply Elivi to a file.
  */
-class EliviProcessingSpec(objectFactory: ObjectFactory) {
+abstract class EliviProcessingSpec {
 
-    val flags = objectFactory.setProperty<CompressOption>()
+    abstract val flags: SetProperty<CompressOption>
 
 }

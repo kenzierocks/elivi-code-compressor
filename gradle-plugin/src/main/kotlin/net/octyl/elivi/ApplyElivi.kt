@@ -26,19 +26,17 @@
 package net.octyl.elivi
 
 import net.octyl.elivi.asm.AsmCodeCompressor
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import java.nio.file.Path
 
 abstract class ApplyElivi : WorkAction<ApplyEliviWorkParameters> {
     override fun execute() {
         val compressor = AsmCodeCompressor()
         compressor.compress(
-            parameters.inputFiles.get(),
+            parameters.inputFiles.map { it.toPath() },
             parameters.outputDir.get().asFile.toPath(),
             parameters.spec.get().flags.get()
         )
@@ -46,7 +44,7 @@ abstract class ApplyElivi : WorkAction<ApplyEliviWorkParameters> {
 }
 
 interface ApplyEliviWorkParameters : WorkParameters {
-    val inputFiles: ListProperty<Path>
+    val inputFiles: ConfigurableFileCollection
     val outputDir: DirectoryProperty
     val spec: Property<EliviProcessingSpec>
 }

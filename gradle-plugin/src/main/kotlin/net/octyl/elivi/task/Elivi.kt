@@ -37,6 +37,7 @@ import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.mapProperty
+import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.setValue
 import org.gradle.kotlin.dsl.submit
 import org.gradle.workers.WorkerExecutor
@@ -70,8 +71,16 @@ open class Elivi @Inject constructor(
         }
     }
 
+    inline fun spec(block: EliviProcessingSpec.() -> Unit) = spec("**/*.class", block)
+
+    inline fun spec(include: String, block: EliviProcessingSpec.() -> Unit) {
+        val spec = project.objects.newInstance<EliviProcessingSpec>()
+        specs.put(PatternSet().include(include), spec.apply(block))
+    }
+
     @OutputDirectory
     val destDirectoryProperty = project.objects.directoryProperty()
+        .convention(project.layout.buildDirectory.dir(name))
     @get:Internal
     var destDirectory by destDirectoryProperty
 
@@ -86,7 +95,7 @@ open class Elivi @Inject constructor(
 
         for ((filter, spec) in specs.get()) {
             workQueue.submit(ApplyElivi::class) {
-                inputFiles.set(source.matching(filter).map { it.toPath() })
+                inputFiles.from(source.matching(filter))
                 outputDir.set(destDirectoryProperty)
                 this.spec.set(spec)
             }

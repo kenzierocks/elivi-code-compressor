@@ -23,6 +23,14 @@ configure<LicenseExtension> {
 dependencies {
     "implementation"(project(":elivi-common"))
     "implementation"(kotlin("stdlib-jdk8", embeddedKotlinVersion))
+
+    val asmVersion = "7.2"
+    testImplementation("org.ow2.asm:asm:$asmVersion")
+    testImplementation("org.ow2.asm:asm-commons:$asmVersion")
+    testImplementation("org.ow2.asm:asm-tree:$asmVersion")
+    val junitVersion = "5.5.0"
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
 pluginBundle {

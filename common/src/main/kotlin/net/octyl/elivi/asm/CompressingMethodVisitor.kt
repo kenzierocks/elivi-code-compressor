@@ -28,6 +28,7 @@ package net.octyl.elivi.asm
 import net.octyl.elivi.CompressOption
 import net.octyl.elivi.CompressOption.REMOVE_LNT
 import net.octyl.elivi.CompressOption.REMOVE_LVT
+import net.octyl.elivi.CompressOption.REMOVE_SIGNATURE
 import org.objectweb.asm.Label
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
@@ -36,9 +37,11 @@ class CompressingMethodVisitor(
     private val flags: Set<CompressOption>,
     delegate: MethodVisitor? = null
 ) : MethodVisitor(Opcodes.ASM7, delegate) {
+
     override fun visitLocalVariable(name: String, descriptor: String?, signature: String?, start: Label?, end: Label?, index: Int) {
         if (REMOVE_LVT !in flags) {
-            return super.visitLocalVariable(name, descriptor, signature, start, end, index)
+            val realSignature = signature.takeUnless { REMOVE_SIGNATURE in flags }
+            return super.visitLocalVariable(name, descriptor, realSignature, start, end, index)
         }
     }
 

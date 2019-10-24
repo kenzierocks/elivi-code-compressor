@@ -26,8 +26,10 @@
 package net.octyl.elivi.asm
 
 import net.octyl.elivi.CompressOption
+import net.octyl.elivi.CompressOption.REMOVE_SIGNATURE
 import net.octyl.elivi.CompressOption.REMOVE_SOURCEFILE
 import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 
@@ -36,8 +38,19 @@ class CompressingClassVisitor(
     delegate: ClassVisitor? = null
 ) : ClassVisitor(Opcodes.ASM7, delegate) {
 
+    override fun visit(version: Int, access: Int, name: String?, signature: String?, superName: String?, interfaces: Array<out String>?) {
+        val realSignature = signature.takeUnless { REMOVE_SIGNATURE in flags }
+        super.visit(version, access, name, realSignature, superName, interfaces)
+    }
+
+    override fun visitField(access: Int, name: String?, descriptor: String?, signature: String?, value: Any?): FieldVisitor {
+        val realSignature = signature.takeUnless { REMOVE_SIGNATURE in flags }
+        return super.visitField(access, name, descriptor, realSignature, value)
+    }
+
     override fun visitMethod(access: Int, name: String?, descriptor: String?, signature: String?, exceptions: Array<out String>?): MethodVisitor {
-        val visitor = super.visitMethod(access, name, descriptor, signature, exceptions)
+        val realSignature = signature.takeUnless { REMOVE_SIGNATURE in flags }
+        val visitor = super.visitMethod(access, name, descriptor, realSignature, exceptions)
         return CompressingMethodVisitor(flags, visitor)
     }
 
